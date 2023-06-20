@@ -1,119 +1,120 @@
+import random
 import sys
 import pygame as pg
-import random
-
 
 WIDTH, HEIGHT = 1600, 900
-BOMB_RADIUS = 10 #爆弾の半径
+delta = {
+    pg.K_UP: (0, -5),
+    pg.K_DOWN: (0, +5),
+    pg.K_LEFT: (-5, 0,),
+    pg.K_RIGHT: (+5, 0),
+}
 
-def is_inside_screen(rect):
-    # 左右の境界をチェック
-    if rect.left < 0 or rect.right > WIDTH:
-        return False
-    # 上下の境界をチェック
-    if rect.top < 0 or rect.bottom > HEIGHT:
-        return False
-    return True
+def init_kk_imgs() -> dict[tuple[int,int],pg.Surface]:
+    
+    kk_img0 = pg.transform.rotozoom(pg/image.load("ex02/fig/3.png"),0,2.0)
+    kk_ing = pg.transform.flip(kk_img0,True,False)
+    return{
+        (+1,0):kk_img,
+        (+1,-1):pg.transform.rotozoom(kk_img,45,1.0),
+        (0,-1):pg.transform.rotozoom(kk_img,90,1.0),
+        (-1,-1):pg.transform.rotozoom(kk_img0,-45,1.0),
+        (+1,0):kk_img0,
+        (-1,+1):pg.transform.rotozoom(kk_img0,45,1.0),
+        (0,-1):pg.transform.rotozoom(kk_img,-90,1.0),
+        (+1,-1):pg.transform.rotozoom(kk_img,-45,1.0),
+                 
+    }
+
+  
+
+def check_bound(rect: pg.Rect) -> tuple[bool, bool]:
+    """
+    こうかとんRect，爆弾Rectが画面外 or 画面内かを判定する関数
+    引数：こうかとんRect or 爆弾Rect
+    戻り値：横方向，縦方向の判定結果タプル（True：画面内／False：画面外）
+    """
+    yoko, tate = True, True
+    if rect.left < 0 or WIDTH < rect.right:  # 横方向判定
+        yoko = False
+    if rect.top < 0 or HEIGHT < rect.bottom:  # 縦方向判定
+        tate = False
+    return yoko, tate
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
-    screen = pg.display.set_mode((WIDTH, HEIGHT)) #指定したゲームのウィンドウを作成
-    bg_img = pg.image.load("ex02/fig/pg_bg.jpg") #背景画像
-    kk_img = pg.image.load("ex02/fig/3.png") #キャラクター画像
-    kk_img = pg.transform.rotozoom(kk_img, 0, 2.0) #キャラクターの画像を２倍に拡大
+    screen = pg.display.set_mode((WIDTH, HEIGHT))
+    bg_img = pg.image.load("ex02/fig/pg_bg.jpg")
+    kk_img = pg.image.load("ex02/fig/3.png")
+    kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
+    kk_img_inverted = pg.transform.flip(kk_img, True, False)
+    kk_ings = init_kk_imgs()
+    kk_ing = kk_imgs[(+1,0)]
+    kk_rec = kk_img.get_rect()
+    kk_rec.center = 900,400 
+       
+    bd_img = pg.Surface((20, 20))  # 練習１
+    # こうかとんSurface（kk_img）からこうかとんRect（kk_rct）を抽出する
+    kk_rct = kk_img.get_rect()
+    kk_rct.center = 900, 400
+    bd_img.set_colorkey((0, 0, 0))  # 黒い部分を透明にする
+    pg.draw.circle(bd_img, (255, 0, 0), (10, 10), 10)
+    x = random.randint(0, WIDTH)
+    y = random.randint(0, HEIGHT)
+    # 爆弾Surface（bd_img）から爆弾Rect（bd_rct）を抽出する
+    bd_rct = bd_img.get_rect()
+    # 爆弾Rectの中心座標を乱数で指定する
+    bd_rct.center = x, y 
+    vx, vy = +5, +5  # 練習２
+    
     clock = pg.time.Clock()
     tmr = 0
-    
-        # 爆弾を作成
-    bomb_surface = pg.Surface((BOMB_RADIUS * 2, BOMB_RADIUS * 2))
-    bomb_surface.set_colorkey((0, 0, 0))  #爆弾表面の黒い部分を透明にする 
-    pg.draw.circle(bomb_surface, (255, 0, 0), (BOMB_RADIUS, BOMB_RADIUS), BOMB_RADIUS)    # 爆弾の表面に赤い円を描く
-    
-    bomb_ax = 5
-    bomb_ay = 5
-    
-    
-        # 爆弾 Rect のランダムな位置を設定します
-    bomb_rect = bomb_surface.get_rect()
-    bomb_rect.x = random.randint(0, WIDTH - bomb_rect.width)
-    bomb_rect.y = random.randint(0, HEIGHT - bomb_rect.height)
-    
-    #Koukaton Rect の初期位置を設定する
-    kk_rect = kk_img.get_rect() 
-    kk_rect.x = 900
-    kk_rect.y = 400
-    
-    
-    # 押したキーと移動量の対応
-    movement_dict = {
-        pg.K_UP: (0, -5),    # Up arrow: (0, -5)
-        pg.K_DOWN: (0, 5),   # Down arrow: (0, 5)
-        pg.K_LEFT: (-5, 0),  # Left arrow: (-5, 0)
-        pg.K_RIGHT: (5, 0)   # Right arrow: (5, 0)
-    }
-    
-
-    
-
     while True:
-        for event in pg.event.get(): #イベントを取得し、QUITイベントが発生した場合はプログラムを終了させる
+        for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
-
+    
+        if kk_rct.colliderect(bd_rct):  # 練習５
+            print("ゲームオーバー")
+            return   # ゲームオーバー 
+    
+        key_lst = pg.key.get_pressed()
+        sum_mv = [0, 0]  # 合計移動量
+        for k, mv in delta.items():
+            if key_lst[k]: 
+                sum_mv[0] += mv[0]
+                sum_mv[1] += mv[1]
+                
+                
+                
+        #angle = 0
+        #if sum_mv[0] < 0:
+        #    angle = 1    #こうかとんが左を向いたときの角度
+        #elif sum_mv[0] > 0:
+        #    angle = -90
+        #elif sum_mv[1] < 0:
+        #    angle = -100   #こうかとんが上を向くときの動き（角度）
+        #elif sum_mv[1] > 0:
+        #    angle = 90  #こうかとんが下を向いたときの動き
+        #kk_img_rotated = pg.transform.rotate(kk_img, angle)
+        
+        kk_rct.move
+        kk_rct.move_ip(sum_mv)
+        if check_bound(kk_rct) != (True, True):
+            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(bg_img, [0, 0])
-        screen.blit(kk_img, kk_rect)
-        
-        
-        keys = pg.key.get_pressed() #現在押されているキーを取得
-        total_movement = (0, 0)
-            
-        for key, movement in movement_dict.items(): #movement_dictに定義されたキーに対応する移動量を計算し、total_movementに合算する。
-            if keys[key]:
-                total_movement = (total_movement[0] + movement[0], total_movement[1] + movement[1]) #要素0 → x軸方向の移動量、要素１ → ｙ軸方向の移動量
-        
-        kk_rect.move_ip(total_movement) #キャラクターの位置を移動する。
-        
-        # こうかとんの移動前の位置を保持
-        prev_kk_rect = kk_rect.copy()
-        kk_rect.move_ip(total_movement[0], total_movement[1])
-        
-        # 境界線をチェックしてこうかとんが画面外に出るのを防ぐ
-        if kk_rect.left < 150:      
-            kk_rect.left = 150   #もし矩形の左端が0より小さい場合、矩形の左端を0に設定します。
-        if kk_rect.right > WIDTH: 
-            kk_rect.right = WIDTH  #もし矩形の右端が画面の幅（WIDTH）を超える場合、矩形の右端を画面の幅（WIDTH）に設定。
-        if kk_rect.top < 150:
-            kk_rect.top = 150    #もし矩形の上端が0より小さい場合、矩形の上端を0に設定します。
-        if kk_rect.bottom > HEIGHT:
-            kk_rect.bottom = HEIGHT   #もし矩形の下端が画面の高さ（HEIGHT）を超える場合、矩形の下端を画面の高さ（HEIGHT）に設定      
-        
-
-        
-        # 画面上に爆弾を描きます
-        screen.blit(bomb_surface, bomb_rect)
-        
-        
-        
-        #爆弾を動かす 
-        bomb_rect.x += bomb_ax
-        bomb_rect.y += bomb_ay
-
-        # 境界を確認して跳ね返す
-        if bomb_rect.left < 0 or bomb_rect.right > WIDTH:
-            bomb_rect.x -= bomb_ax             #もし爆弾の左端が0より小さいか、爆弾の右端が画面の幅（WIDTH）を超える場合、爆弾の位置を左に5ピクセル移動
-            bomb_ax *= -1
-        if bomb_rect.top < 0 or bomb_rect.bottom > HEIGHT:
-            bomb_rect.y -= bomb_ay                    #もし爆弾の上端が0より小さいか、爆弾の下端が画面の高さ（HEIGHT）を超える場合、爆弾の位置を上に5ピクセル移動
-            bomb_ay *= -1
-        bomb_rect.move_ip(total_movement) #爆弾の位置を移動する
-            
-        screen.blit(bomb_surface, bomb_rect)
-            
-        
-        
+        screen.blit(kk_img_rotated, kk_rct)
+        bd_rct.move_ip(vx, vy)  # 練習２
+        screen.blit(bd_img, bd_rct)
+        yoko, tate = check_bound(bd_rct)
+        if not yoko:  # 横方向に画面外だったら
+            vx *= -1
+        if not tate:  # 縦方向に範囲外だったら
+            vy *= -1
         pg.display.update()
         tmr += 1
-        clock.tick(60)
+        clock.tick(50)
 
 
 if __name__ == "__main__":
