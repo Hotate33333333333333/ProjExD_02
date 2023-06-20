@@ -26,26 +26,26 @@ def main():
     bomb_rect.y = random.randint(0, HEIGHT - bomb_rect.height)
     
     #Koukaton Rect の初期位置を設定する
-    kk_rect = kk_img.get_rect() 
-    kk_rect.x = 900
-    kk_rect.y = 400
+    #kk_rect = kk_img.get_rect() 
+    #kk_rect.x = 900
+    #kk_rect.y = 400
     
     # 押したキーと移動量の対応
-    movement_dict = {
-        pg.K_UP: (0, -5),    # Up arrow: (0, -5)
-        pg.K_DOWN: (0, 5),   # Down arrow: (0, 5)
-        pg.K_LEFT: (-5, 0),  # Left arrow: (-5, 0)
-        pg.K_RIGHT: (5, 0)   # Right arrow: (5, 0)
-    }
+    #movement_dict = {
+    #    pg.K_UP: (0, -5),    # Up arrow: (0, -5)
+    #    pg.K_DOWN: (0, 5),   # Down arrow: (0, 5)
+    #    pg.K_LEFT: (-5, 0),  # Left arrow: (-5, 0)
+    #    pg.K_RIGHT: (5, 0)   # Right arrow: (5, 0)
+    #}
     
-    def is_inside_screen(rect):
+    #def is_inside_screen(rect):
         # 左右の境界をチェック
-        if rect.left < 0 or rect.right > WIDTH:
-            return False
+    #    if rect.left < 0 or rect.right > WIDTH:
+    #        return False
         # 上下の境界をチェック
-        if rect.top < 0 or rect.bottom > HEIGHT:
-            return False
-        return True
+    #    if rect.top < 0 or rect.bottom > HEIGHT:
+    #        return False
+    #    return True
 
     while True:
         for event in pg.event.get(): #イベントを取得し、QUITイベントが発生した場合はプログラムを終了させる
@@ -53,31 +53,31 @@ def main():
                 return
 
         screen.blit(bg_img, [0, 0])
-        screen.blit(kk_img, kk_rect)
+    #    screen.blit(kk_img, kk_rect)
         
         
-        keys = pg.key.get_pressed() #現在押されているキーを取得
-        total_movement = (0, 0)
+    #    keys = pg.key.get_pressed() #現在押されているキーを取得
+    #    total_movement = (0, 0)
             
-        for key, movement in movement_dict.items(): #movement_dictに定義されたキーに対応する移動量を計算し、total_movementに合算する。
-            if keys[key]:
-                total_movement = (total_movement[0] + movement[0], total_movement[1] + movement[1]) #要素0 → x軸方向の移動量、要素１ → ｙ軸方向の移動量
+    #    for key, movement in movement_dict.items(): #movement_dictに定義されたキーに対応する移動量を計算し、total_movementに合算する。
+    #        if keys[key]:
+    #            total_movement = (total_movement[0] + movement[0], total_movement[1] + movement[1]) #要素0 → x軸方向の移動量、要素１ → ｙ軸方向の移動量
         
-        kk_rect.move_ip(total_movement) #キャラクターの位置を移動する。
+    #    kk_rect.move_ip(total_movement) #キャラクターの位置を移動する。
         
         # こうかとんの移動前の位置を保持
-        prev_kk_rect = kk_rect.copy()
-        kk_rect.move_ip(total_movement[0], total_movement[1])
+    #    prev_kk_rect = kk_rect.copy()
+    #    kk_rect.move_ip(total_movement[0], total_movement[1])
         
         # 境界線をチェックしてこうかとんが画面外に出るのを防ぐ
-        if kk_rect.left < 0:
-            kk_rect.left = 0
-        if kk_rect.right > WIDTH:
-            kk_rect.right = WIDTH
-        if kk_rect.top < 0:
-            kk_rect.top = 0
-        if kk_rect.bottom > HEIGHT:
-            kk_rect.bottom = HEIGHT        
+    #    if kk_rect.left < 100:      
+    #        kk_rect.left = 100   #もし矩形の左端が0より小さい場合、矩形の左端を0に設定します。
+    #    if kk_rect.right > WIDTH: 
+    #        kk_rect.right = WIDTH  #もし矩形の右端が画面の幅（WIDTH）を超える場合、矩形の右端を画面の幅（WIDTH）に設定。
+    #    if kk_rect.top < 100:
+    #        kk_rect.top = 100    #もし矩形の上端が0より小さい場合、矩形の上端を0に設定します。
+    #    if kk_rect.bottom > HEIGHT:
+    #        kk_rect.bottom = HEIGHT   #もし矩形の下端が画面の高さ（HEIGHT）を超える場合、矩形の下端を画面の高さ（HEIGHT）に設定      
        
 
         
@@ -89,10 +89,10 @@ def main():
         bomb_rect.y += 5
 
         # 境界を確認して跳ね返す
-        if bomb_rect.left < 0 or bomb_rect.right > WIDTH:
-            bomb_rect.x -= 5
-        if bomb_rect.top < 0 or bomb_rect.bottom > HEIGHT:
-            bomb_rect.y -= 5
+        #if bomb_rect.left < 0 or bomb_rect.right > WIDTH:
+        #    bomb_rect.x -= 5                                 #もし爆弾の左端が0より小さいか、爆弾の右端が画面の幅（WIDTH）を超える場合、爆弾の位置を左に5ピクセル移動
+        #if bomb_rect.top < 0 or bomb_rect.bottom > HEIGHT:
+        #    bomb_rect.y -= 5                                 #もし爆弾の上端が0より小さいか、爆弾の下端が画面の高さ（HEIGHT）を超える場合、爆弾の位置を上に5ピクセル移動
             
         bomb_rect.move_ip(total_movement) #爆弾の位置を移動する
             
