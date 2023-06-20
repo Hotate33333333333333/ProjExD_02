@@ -6,6 +6,15 @@ import random
 WIDTH, HEIGHT = 1600, 900
 BOMB_RADIUS = 10 #爆弾の半径
 
+def is_inside_screen(rect):
+    # 左右の境界をチェック
+    if rect.left < 0 or rect.right > WIDTH:
+        return False
+    # 上下の境界をチェック
+    if rect.top < 0 or rect.bottom > HEIGHT:
+        return False
+    return True
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT)) #指定したゲームのウィンドウを作成
@@ -20,6 +29,10 @@ def main():
     bomb_surface.set_colorkey((0, 0, 0))  #爆弾表面の黒い部分を透明にする 
     pg.draw.circle(bomb_surface, (255, 0, 0), (BOMB_RADIUS, BOMB_RADIUS), BOMB_RADIUS)    # 爆弾の表面に赤い円を描く
     
+    bomb_ax = 5
+    bomb_ay = 5
+    
+    
         # 爆弾 Rect のランダムな位置を設定します
     bomb_rect = bomb_surface.get_rect()
     bomb_rect.x = random.randint(0, WIDTH - bomb_rect.width)
@@ -30,6 +43,7 @@ def main():
     kk_rect.x = 900
     kk_rect.y = 400
     
+    
     # 押したキーと移動量の対応
     movement_dict = {
         pg.K_UP: (0, -5),    # Up arrow: (0, -5)
@@ -38,14 +52,8 @@ def main():
         pg.K_RIGHT: (5, 0)   # Right arrow: (5, 0)
     }
     
-    def is_inside_screen(rect):
-        # 左右の境界をチェック
-        if rect.left < 0 or rect.right > WIDTH:
-            return False
-        # 上下の境界をチェック
-        if rect.top < 0 or rect.bottom > HEIGHT:
-            return False
-        return True
+
+    
 
     while True:
         for event in pg.event.get(): #イベントを取得し、QUITイベントが発生した場合はプログラムを終了させる
@@ -70,30 +78,33 @@ def main():
         kk_rect.move_ip(total_movement[0], total_movement[1])
         
         # 境界線をチェックしてこうかとんが画面外に出るのを防ぐ
-        if kk_rect.left < 100:      
-            kk_rect.left = 100   #もし矩形の左端が0より小さい場合、矩形の左端を0に設定します。
+        if kk_rect.left < 150:      
+            kk_rect.left = 150   #もし矩形の左端が0より小さい場合、矩形の左端を0に設定します。
         if kk_rect.right > WIDTH: 
             kk_rect.right = WIDTH  #もし矩形の右端が画面の幅（WIDTH）を超える場合、矩形の右端を画面の幅（WIDTH）に設定。
-        if kk_rect.top < 100:
-            kk_rect.top = 100    #もし矩形の上端が0より小さい場合、矩形の上端を0に設定します。
+        if kk_rect.top < 150:
+            kk_rect.top = 150    #もし矩形の上端が0より小さい場合、矩形の上端を0に設定します。
         if kk_rect.bottom > HEIGHT:
             kk_rect.bottom = HEIGHT   #もし矩形の下端が画面の高さ（HEIGHT）を超える場合、矩形の下端を画面の高さ（HEIGHT）に設定      
-       
+        
 
         
         # 画面上に爆弾を描きます
         screen.blit(bomb_surface, bomb_rect)
         
+        
+        
         #爆弾を動かす 
-        bomb_rect.x += 5
-        bomb_rect.y += 5
+        bomb_rect.x += bomb_ax
+        bomb_rect.y += bomb_ay
 
         # 境界を確認して跳ね返す
-        #if bomb_rect.left < 0 or bomb_rect.right > WIDTH:
-        #    bomb_rect.x -= 5                                 #もし爆弾の左端が0より小さいか、爆弾の右端が画面の幅（WIDTH）を超える場合、爆弾の位置を左に5ピクセル移動
-        #if bomb_rect.top < 0 or bomb_rect.bottom > HEIGHT:
-        #    bomb_rect.y -= 5                                 #もし爆弾の上端が0より小さいか、爆弾の下端が画面の高さ（HEIGHT）を超える場合、爆弾の位置を上に5ピクセル移動
-            
+        if bomb_rect.left < 0 or bomb_rect.right > WIDTH:
+            bomb_rect.x -= bomb_ax             #もし爆弾の左端が0より小さいか、爆弾の右端が画面の幅（WIDTH）を超える場合、爆弾の位置を左に5ピクセル移動
+            bomb_ax *= -1
+        if bomb_rect.top < 0 or bomb_rect.bottom > HEIGHT:
+            bomb_rect.y -= bomb_ay                    #もし爆弾の上端が0より小さいか、爆弾の下端が画面の高さ（HEIGHT）を超える場合、爆弾の位置を上に5ピクセル移動
+            bomb_ay *= -1
         bomb_rect.move_ip(total_movement) #爆弾の位置を移動する
             
         screen.blit(bomb_surface, bomb_rect)
