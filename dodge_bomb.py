@@ -63,21 +63,21 @@ def main():
             if keys[key]:
                 total_movement = (total_movement[0] + movement[0], total_movement[1] + movement[1]) #要素0 → x軸方向の移動量、要素１ → ｙ軸方向の移動量
         
-        #kk_rect.move_ip(total_movement) #キャラクターの位置を移動する。
+        kk_rect.move_ip(total_movement) #キャラクターの位置を移動する。
         
         # こうかとんの移動前の位置を保持
-        #prev_kk_rect = kk_rect.copy()
-        #kk_rect.move_ip(total_movement[0], total_movement[1])
+        prev_kk_rect = kk_rect.copy()
+        kk_rect.move_ip(total_movement[0], total_movement[1])
         
         # 境界線をチェックしてこうかとんが画面外に出るのを防ぐ
-        #if kk_rect.left < 100:      
-        #    kk_rect.left = 100   #もし矩形の左端が0より小さい場合、矩形の左端を0に設定します。
-        #if kk_rect.right > WIDTH: 
-        #    kk_rect.right = WIDTH  #もし矩形の右端が画面の幅（WIDTH）を超える場合、矩形の右端を画面の幅（WIDTH）に設定。
-        #if kk_rect.top < 100:
-        #    kk_rect.top = 100    #もし矩形の上端が0より小さい場合、矩形の上端を0に設定します。
-        #if kk_rect.bottom > HEIGHT:
-        #    kk_rect.bottom = HEIGHT   #もし矩形の下端が画面の高さ（HEIGHT）を超える場合、矩形の下端を画面の高さ（HEIGHT）に設定      
+        if kk_rect.left < 100:      
+            kk_rect.left = 100   #もし矩形の左端が0より小さい場合、矩形の左端を0に設定します。
+        if kk_rect.right > WIDTH: 
+            kk_rect.right = WIDTH  #もし矩形の右端が画面の幅（WIDTH）を超える場合、矩形の右端を画面の幅（WIDTH）に設定。
+        if kk_rect.top < 100:
+            kk_rect.top = 100    #もし矩形の上端が0より小さい場合、矩形の上端を0に設定します。
+        if kk_rect.bottom > HEIGHT:
+            kk_rect.bottom = HEIGHT   #もし矩形の下端が画面の高さ（HEIGHT）を超える場合、矩形の下端を画面の高さ（HEIGHT）に設定      
        
 
         
