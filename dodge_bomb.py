@@ -10,24 +10,6 @@ delta = {
     pg.K_RIGHT: (+5, 0),
 }
 
-def init_kk_imgs() -> dict[tuple[int,int],pg.Surface]:
-    
-    kk_img0 = pg.transform.rotozoom(pg/image.load("ex02/fig/3.png"),0,2.0)
-    kk_ing = pg.transform.flip(kk_img0,True,False)
-    return{
-        (+1,0):kk_img,
-        (+1,-1):pg.transform.rotozoom(kk_img,45,1.0),
-        (0,-1):pg.transform.rotozoom(kk_img,90,1.0),
-        (-1,-1):pg.transform.rotozoom(kk_img0,-45,1.0),
-        (+1,0):kk_img0,
-        (-1,+1):pg.transform.rotozoom(kk_img0,45,1.0),
-        (0,-1):pg.transform.rotozoom(kk_img,-90,1.0),
-        (+1,-1):pg.transform.rotozoom(kk_img,-45,1.0),
-                 
-    }
-
-  
-
 def check_bound(rect: pg.Rect) -> tuple[bool, bool]:
     """
     こうかとんRect，爆弾Rectが画面外 or 画面内かを判定する関数
@@ -48,12 +30,6 @@ def main():
     bg_img = pg.image.load("ex02/fig/pg_bg.jpg")
     kk_img = pg.image.load("ex02/fig/3.png")
     kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
-    kk_img_inverted = pg.transform.flip(kk_img, True, False)
-    kk_ings = init_kk_imgs()
-    kk_ing = kk_imgs[(+1,0)]
-    kk_rec = kk_img.get_rect()
-    kk_rec.center = 900,400 
-       
     bd_img = pg.Surface((20, 20))  # 練習１
     # こうかとんSurface（kk_img）からこうかとんRect（kk_rct）を抽出する
     kk_rct = kk_img.get_rect()
@@ -86,18 +62,16 @@ def main():
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
                 
-                
-                
-        #angle = 0
-        #if sum_mv[0] < 0:
-        #    angle = 1    #こうかとんが左を向いたときの角度
-        #elif sum_mv[0] > 0:
-        #    angle = -90
-        #elif sum_mv[1] < 0:
-        #    angle = -100   #こうかとんが上を向くときの動き（角度）
-        #elif sum_mv[1] > 0:
-        #    angle = 90  #こうかとんが下を向いたときの動き
-        #kk_img_rotated = pg.transform.rotate(kk_img, angle)
+        angle = 0
+        if sum_mv[0] < 0:
+            angle = 1    #こうかとんが左を向いたときの角度
+        elif sum_mv[0] > 0:
+            angle = -90
+        elif sum_mv[1] < 0:
+            angle = -100   #こうかとんが上を向くときの動き（角度）
+        elif sum_mv[1] > 0:
+            angle = 90  #こうかとんが下を向いたときの動き
+        kk_img_rotated = pg.transform.rotate(kk_img, angle)
         
         kk_rct.move
         kk_rct.move_ip(sum_mv)
